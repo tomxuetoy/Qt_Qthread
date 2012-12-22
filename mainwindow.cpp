@@ -10,14 +10,12 @@ myThread::myThread(QObject *parent)
 
 void myThread::run()
 {
-    //QTimer timer;
-    //connect(&timer, SIGNAL(timeout()), this, SLOT(TimerUpdate()));
-    //timer.start(200); //update of each 200ms
     while(1){
         qDebug("thread one----------");
-        //usleep(100);
+        emit threadSignal1();
+        usleep(100000);
     }
-    exec();
+    //exec();
 }
 
 myThread2::myThread2(QObject *parent)
@@ -27,44 +25,48 @@ myThread2::myThread2(QObject *parent)
 
 void myThread2::run()
 {
-    //QTimer timer;
-    //connect(&timer, SIGNAL(timeout()), this, SLOT(TimerUpdate()));
-    //timer.start(200); //update of each 200ms
     while(1){
         qDebug("thread two");
-        //usleep(100);
+        emit threadSignal2();
+        usleep(100000);
     }
-    exec();
+    //exec();
 }
-/*
-void myThread::TimerUpdate()
-{
-    emit deviceAmbient();
-}
-*/
-/* ****** Thread part ****** */
-
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
     onethread = new myThread(this);
-    onethread->start(QThread::NormalPriority);
-
     twothread = new myThread2(this);
-    twothread->start(QThread::NormalPriority);
 
-    connect(ui->pushButton, SIGNAL(clicked()),
-            this, SLOT(CloseApp()));
+    connect(onethread, SIGNAL(threadSignal1()),
+            this, SLOT(mySlot1()));
+    connect(twothread, SIGNAL(threadSignal2()),
+            this, SLOT(mySlot2()),Qt::QueuedConnection);
+
+    onethread->start(QThread::NormalPriority);
+    twothread->start(QThread::NormalPriority);
 }
 
-void MainWindow::CloseApp()
+void MainWindow::mySlot1()
 {
-    close();
+    ui->textEdit1->append("This is thread1");
+}
+
+void MainWindow::mySlot2()
+{
+    ui->textEdit2->append("This is thread2");
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    ui->textEdit1->append("textEdit1");
+    ui->textEdit2->append("textEdit2");
 }

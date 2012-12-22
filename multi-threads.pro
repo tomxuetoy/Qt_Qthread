@@ -1,12 +1,12 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2011-11-14T23:25:52
+# Project created by QtCreator 2012-12-21T23:48:40
 #
 #-------------------------------------------------
 
 QT       += core gui
 
-TARGET = trial_QThread
+TARGET = multi-threads
 TEMPLATE = app
 
 
